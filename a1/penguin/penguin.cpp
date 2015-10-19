@@ -72,6 +72,19 @@ bool paused = true;
 // TODO: Add additional joint parameters here
 //////////////////////////////////////////////////////
 
+extern SceneNode * leftThigh;
+extern SceneNode * leftShin;
+extern SceneNode * rightThigh;
+extern SceneNode * rightShin;
+extern SceneNode * body;
+extern SceneNode * leftArm;
+extern SceneNode * rightArm;
+extern SceneNode * head;
+extern SceneNode * eyeWhite;
+extern SceneNode * eyePupil;
+extern SceneNode * beakTop;
+extern SceneNode * beakBottom;
+
 extern SceneNode * scene;
 
 // ***********  FUNCTION HEADER DECLARATIONS ****************
@@ -95,8 +108,6 @@ void GLUI_Control(int id);
 double getTime();
 
 // ******************** FUNCTIONS ************************
-
-
 
 // main() function
 // Initializes the user interface (and any user variables)
@@ -169,9 +180,10 @@ void animateButton(int)
   }
 }
 
+// add a SceneNode control  panel to a GLUI panel
 void addNodePanel(GLUI * glui,
         GLUI_Panel * parent,
-        const char * name, 
+        char * name, 
         SceneNode * node) {
     GLUI_Rollout * node_panel = glui->add_rollout_to_panel(parent, name, true);
     
@@ -305,6 +317,8 @@ void initGl(void)
 }
 
 
+
+
 int lastTime = 0;
 // Callback idle function for animating the scene
 void animate()
@@ -370,14 +384,6 @@ void display(void)
     // Setup the model-view transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    ///////////////////////////////////////////////////////////
-    // TODO:
-    //   Modify this function draw the scene
-    //   This should include function calls to pieces that
-    //   apply the appropriate transformation matrice and
-    //   render the individual body parts.
-    ///////////////////////////////////////////////////////////
         
     // Draw the scene
     scene->render();

@@ -6,6 +6,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <glui.h>
+#include <vector>
 
 typedef struct Color {
     float red;

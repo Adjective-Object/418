@@ -32,22 +32,30 @@ SceneNode * scene;
 extern int draw_joints;
 
 void createPenguin() {
-    glMatrixMode(GL_MODELVIEW);
+    // Declare a scene tree
    
+    // create a joint object to reuse as a child of rotatable elements
+    // This element will get updated multiple times each time step, but
+    // that's fine because it has no animation parameters
     SceneNode * joint = new SceneNode(
-        1.0f,
-        flatValue(0),
-        doNothing,
-        conditionalRender(drawNgon({1, 1, 1}, 6, 2), &draw_joints),
-        {0, 0, 10, 0, 1, 1},
-        {}
+        1.0f,         // number of seconds per animation loop
+        flatValue(0), // animation parameter easing function (hold const value)
+        doNothing,    // animation function (do nothing)
+        conditionalRender( // draw hexagon for a joint if  draw_joints flag set
+            drawNgon({1, 1, 1}, 6, 2),
+            &draw_joints),
+        {0, 0, 10, 0, 1, 1}, // base transform of the joint
+                             // translate (0,0,10)
+                             // rotate 0 deg
+                             // scale (1,1)
+        {} // the joint has no children
     );
 
+    // create a drawShin & drawThigh function to use on either leg
     std::function<void ()> drawShin = 
         drawRect({1.0f, 0.0f, 0.0f},
                  -2, 0, 2, -10);
-   
-
+  
     std::function<void ()> drawThigh = 
         drawRect({1.0f, 0.0f, 0.0f},
                  -2, 0, 2, -20);

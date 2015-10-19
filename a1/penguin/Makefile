@@ -12,20 +12,19 @@ CC            = gcc
 CCC	          = /usr/bin/g++
 
 # Define C compiler options
-CFLAGS        = -Wall -c -g
+CFLAGS        = -Wall -c -g -I/u/csc418h/include/fall05/include 
 
-# eefine C++ compiler options
-CCCFLAGS      = -Wall -c -g -std=c++11
+# Define C++ compiler options
+CCCFLAGS      = -Wall -c -g -std=c++0x # c++11 why is our g++ so out of date
 
 # Define C/C++ pre-processor options
-CPPFLAGS      = -I./ -I/u/csc418h/include/fall05/include -I/usr/include/GL
+CPPFLAGS      = -I./ -I/usr/include/GL
 
 # Define location of OpenGL and GLU libraries along with their lib names
-GL_LIBS       = -L/u/csc418h/include/fall05/lib  -lGLU -lGL -lglut -lglui \
-				-L/usr/include/GL
+GL_LIBS = -lGLU -lGL -lglut -lglui -L/usr/include/GL
 
 # Define location of X Windows libraries,  and the X11 library names
-XLIBS         = -L/usr/X11R6/lib -L/usr/lib -lX11 
+XLIBS         = -lX11 
 
 # Define the location of the destination directory for the executable file
 DEST	      = .
@@ -39,9 +38,8 @@ LIBS	      = $(GL_LIBS) $(GLUT_LIBS) -lm $(XLIBS) -ldl
 # Define linker
 LINKER	      = g++
 
-# Define all object files to be the same as CPPSRCS but with all the .cpp 
-# and .c suffixes replaced with .o
-
+# Define all object files to be the same as CPPSRCS but with all the 
+# .cpp and .c suffixes replaced with .o
 OBJ           = $(CPPSRCS:.cpp=.o) $(CSRCS:.c=.o)
 
 # Define name of target executable
@@ -51,7 +49,7 @@ PROGRAM	          = penguin
 CSRCS         =
 
 # Define all C++ source files here
-CPPSRCS       = scenegraph.cpp penguin.cpp scene.cpp
+CPPSRCS       = scenegraph.cpp scene.cpp penguin.cpp
 
 ##############################################################################
 # Define additional rules that make should know about in order to compile our

@@ -13,14 +13,14 @@ A. PLEASE ANSWER THE FOLLOWING QUESTIONS (your assignment will not be graded oth
    Academic Honesty policy stated in 
    http://www.cs.toronto.edu/~kyros/courses/418/policy.2010f.html
 
-   _x_Yes   ___No
+   ___Yes   ___No
 
 
 2. I collaborated on this assignment with another student 
    (see http://www.cs.toronto.edu/~kyros/courses/418/policy.2010f.html for
     policy on assignments done in collaboration)
 
-   ___Yes   _x_No
+   ___Yes   ___No
 
    If you checked yes, please supply the following
 
@@ -39,16 +39,16 @@ B. PLACE AN (X) IN FRONT OF PORTIONS OF THE ASSIGNMENT THAT YOU COMPLETED IN FUL
    WE WILL BE ABLE TO MAKE AN ACCURATE ASSESSMENT
 
    
-_x_   ( 5 points) Part 2a     Parts description & drawing
+___   ( 5 points) Part 2a     Parts description & drawing
                   
-_x_   (10 points) Part 2b	  Parts transformation description & implementation
+___   (10 points) Part 2b	  Parts transformation description & implementation
 
-_x_   ( 8 points) Part 2c     Animation control functions description & implementation
+___   ( 8 points) Part 2c     Animation control functions description & implementation
 
-_x_   (15 points) Part 2d     Hierarchical object rendering 
+___   (15 points) Part 2d     Hierarchical object rendering 
                   
-_x_   ( 2 points) Part 2e     Joint drawing
+___   ( 2 points) Part 2e     Joint drawing
 
-_x_   (10 points) Part 2f     Written report
+___   (10 points) Part 2f     Written report
 
 -------------------------------------------------------------------------------- 
