@@ -48,9 +48,10 @@ class SceneNode {
 void rotateAbout(Vector3 offset, float x, float y, float z); 
 
 // rendering functions & their higher order counterparts
-void _drawCube(Color c, float w, float h, float d);
-std::function<void ()> drawCube(
-        int * renderStyle, Color c, float w, float h, float d);
+void _cube(Color c, float w, float h, float d);
+std::function<void ()> cube(float w, float h, float d);
+std::function<void ()> drawModel(
+        int * renderStyle, Color c, std::function<void ()> draw);
 
 void _drawPolygon(Color c, std::vector<std::pair<float, float>> verts);
 std::function<void ()> drawPolygon(

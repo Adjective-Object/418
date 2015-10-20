@@ -21,6 +21,8 @@ SceneNode *body,
           *l_elbow,
           *r_elbow,
           *head,
+          *beak_top,
+          *beak_bottom,
           *l_hip,
           *r_hip,
           *l_shin,
@@ -53,9 +55,10 @@ void initScene() {
                 {0, -0.5, 0}, // rotate about the top of the arm
                 frame.getDOF(Keyframe::L_ELBOW),0,0); 
         },
-        drawCube(&renderPassMode,
+        drawModel(
+            &renderPassMode,
             {0.5f, 0.0f, 0.25f},
-            0.2f, 0.5f, 0.2f),
+            cube(0.2f, 0.5f, 0.2f)),
         {});
     
     r_elbow = new SceneNode(
@@ -66,9 +69,10 @@ void initScene() {
                 {0, -0.5, 0},
                 frame.getDOF(Keyframe::R_ELBOW),0,0);
         },
-        drawCube(&renderPassMode,
+        drawModel(
+            &renderPassMode,
             {0.5f, 0.0f, 0.25f},
-            0.2f, 0.5f, 0.2f),
+            cube(0.2f, 0.5f, 0.2f)),
         {});
     
     l_shoulder = new SceneNode(
@@ -79,9 +83,10 @@ void initScene() {
                 frame.getDOF(Keyframe::L_SHOULDER_YAW), 
                 frame.getDOF(Keyframe::L_SHOULDER_ROLL));
         },
-        drawCube(&renderPassMode,
-                {1.0f, 0.0f, 0.5f}, //color
-                0.2f, 0.5f, 0.2f), //dimensions
+        drawModel(
+            &renderPassMode,
+            {1.0f, 0.0f, 0.5f},
+            cube(0.2f, 0.5f, 0.2f)),
         {l_elbow});
 
     r_shoulder = new SceneNode(
@@ -92,18 +97,20 @@ void initScene() {
                 frame.getDOF(Keyframe::R_SHOULDER_YAW), 
                 frame.getDOF(Keyframe::R_SHOULDER_ROLL));
         },
-        drawCube(&renderPassMode,
-                {1.0f, 0.0f, 0.5f}, //color
-                0.2f, 0.5f, 0.2f), //dimensions
+        drawModel(
+            &renderPassMode,
+            {1.0f, 0.0f, 0.5f}, //color
+            cube(0.2f, 0.5f, 0.2f)), //dimensions
         {r_elbow});
 
     l_foot = new SceneNode(
         [](Keyframe & frame) {
             glTranslatef(0.0f, -0.4f, 0.3f);
         },
-        drawCube(&renderPassMode,
+        drawModel(
+            &renderPassMode,
             {1.0f, 0.0f, 0.5f}, //color
-            0.15f, 0.05f, 0.35f),
+            cube(0.15f, 0.05f, 0.35f)),
         {}
     );
 
@@ -113,10 +120,10 @@ void initScene() {
             rotateAbout({0, -0.3f, 0},
                 frame.getDOF(Keyframe::L_KNEE), 0, 0);
         },
-        drawCube(
+        drawModel(
             &renderPassMode,
             {1.0f, 0.4f, 0.4f},
-            0.1f, 0.3f, 0.1f),
+            cube(0.1f, 0.3f, 0.1f)),
         {l_foot}
     );
 
@@ -128,10 +135,10 @@ void initScene() {
                 frame.getDOF(Keyframe::L_HIP_YAW),
                 frame.getDOF(Keyframe::L_HIP_ROLL));
         },
-        drawCube(
+        drawModel(
             &renderPassMode,
             {1.0f, 0.4f, 0.4f},
-            0.1f, 0.3f, 0.1f),
+            cube(0.1f, 0.3f, 0.1f)),
         {l_shin}
     );
 
@@ -139,9 +146,10 @@ void initScene() {
         [](Keyframe & frame) {
             glTranslatef(0.0f, -0.4f, 0.3f);
         },
-        drawCube(&renderPassMode,
+        drawModel(
+            &renderPassMode,
             {1.0f, 0.0f, 0.5f}, //color
-            0.15f, 0.05f, 0.35f),
+            cube(0.15f, 0.05f, 0.35f)),
         {}
     );
 
@@ -151,10 +159,10 @@ void initScene() {
             rotateAbout({0, -0.3f, 0},
                 frame.getDOF(Keyframe::R_KNEE), 0, 0);
         },
-        drawCube(
+        drawModel(
             &renderPassMode,
             {1.0f, 0.4f, 0.4f},
-            0.1f, 0.3f, 0.1f),
+            cube(0.1f, 0.3f, 0.1f)),
         {r_foot}
     );
 
@@ -166,11 +174,34 @@ void initScene() {
                 frame.getDOF(Keyframe::R_HIP_YAW),
                 frame.getDOF(Keyframe::R_HIP_ROLL));
         },
-        drawCube(
+        drawModel(
             &renderPassMode,
             {1.0f, 0.4f, 0.4f},
-            0.1f, 0.3f, 0.1f),
+            cube(0.1f, 0.3f, 0.1f)),
         {r_shin}
+    );
+
+    beak_bottom = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(
+                0, -0.11 - frame.getDOF(Keyframe::BEAK), 0.0f);
+        },
+        drawModel(
+            &renderPassMode,
+            {0.9f, 0.8f, 0.1f},
+            cube(0.1f, 0.05f, 0.2)),
+        {}
+    );
+
+    beak_top = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(0, 0, 0.7f);
+        },
+        drawModel(
+            &renderPassMode,
+            {0.9f, 0.8f, 0.1f},
+            cube(0.1f, 0.05f, 0.2)),
+        {beak_bottom}
     );
 
     head = new SceneNode(
@@ -180,10 +211,11 @@ void initScene() {
                 {0, 0, 0},
                 0,frame.getDOF(Keyframe::HEAD),0);
         },
-        drawCube(&renderPassMode,
-                 {0.5f, 0.0f, 1.0f},
-                 0.5f, 0.5f, 0.5),
-        {}
+        drawModel(
+            &renderPassMode,
+            {0.5f, 0.0f, 1.0f},
+            cube(0.5f, 0.5f, 0.5)),
+        {beak_top}
     );
 
     body = new SceneNode(
@@ -198,9 +230,10 @@ void initScene() {
                 frame.getDOF(Keyframe::ROOT_ROTATE_Y),
                 frame.getDOF(Keyframe::ROOT_ROTATE_Z));
             },
-        drawCube(&renderPassMode,
-                 {1.0f, 0.5f, 0.1f},
-                 0.5f, 1.0f, 0.5f),
+        drawModel(
+            &renderPassMode,
+            {1.0f, 0.5f, 0.1f},
+            cube(0.5f, 1.0f, 0.5f)),
         {l_shoulder, r_shoulder, head, l_hip, r_hip}
     );
 

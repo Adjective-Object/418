@@ -826,7 +826,7 @@ void display(void)
 
 
     ///////////////////////////////////////////////////////////
-    // TODO:
+    // (DONE) TODO: make the penguin Prettier
 	//   Modify this function to draw the scene.
 	//   This should include function calls that apply
 	//   the appropriate transformation matrices and render

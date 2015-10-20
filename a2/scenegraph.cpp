@@ -50,9 +50,8 @@ void rotateAbout (Vector3 offset, float x, float y, float z) {
 // Drawing functions
 
 // Draw a rectangular prism cube, centered at the current location
-void _drawCube(Color c, float w, float h, float d)
+void _cube(float w, float h, float d)
 {
-    glColor3f(c.red, c.green, c.blue);
 	glBegin(GL_QUADS);
 		// draw front face
 		glVertex3f(-w, -h, d);
@@ -92,23 +91,31 @@ void _drawCube(Color c, float w, float h, float d)
 	glEnd();
 }
 
+std::function<void ()> cube(float w, float h, float d) {
+    return [=] () {_cube(w, h, d);};
+}
 
-std::function<void ()> drawCube(
-        int * renderPassMode, Color c, float w, float h, float d) {
+
+std::function<void ()> drawModel(
+        int * renderPassMode, Color c, 
+        std::function<void ()> draw) {
     return [=] ()  {
         if (*renderPassMode == SOLID) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            _drawCube(c, w, h, d);
+            glColor3f(c.red, c.green, c.blue);
+            draw();
         }
 
         if (*renderPassMode == WIREFRAME) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            _drawCube(c, w, h, d);
+            glColor3f(c.red, c.green, c.blue);
+            draw();
         }
         
         if (*renderPassMode == OUTLINED) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            _drawCube({0,0,0}, w, h, d);
+            glColor3f(0,0,0);
+            draw();
         }
     };
 }
