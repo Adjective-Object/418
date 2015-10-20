@@ -15,18 +15,19 @@
 #include "scenegraph.hpp"
 #include "scene.hpp"
 
-SceneNode * body;
-SceneNode * l_shoulder;
-SceneNode * r_shoulder;
-SceneNode * l_elbow;
-SceneNode * r_elbow;
-SceneNode * head;
-SceneNode * l_leg;
-SceneNode * r_leg;
-SceneNode * l_foot;
-SceneNode * r_foot;
-
-SceneNode * scene;
+SceneNode *body,
+          *l_shoulder,
+          *r_shoulder,
+          *l_elbow,
+          *r_elbow,
+          *head,
+          *l_hip,
+          *r_hip,
+          *l_shin,
+          *r_shin,
+          *l_foot,
+          *r_foot,
+          *scene;
 
 extern int renderPassMode;
 
@@ -96,6 +97,82 @@ void initScene() {
                 0.2f, 0.5f, 0.2f), //dimensions
         {r_elbow});
 
+    l_foot = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(0.0f, -0.4f, 0.3f);
+        },
+        drawCube(&renderPassMode,
+            {1.0f, 0.0f, 0.5f}, //color
+            0.15f, 0.05f, 0.35f),
+        {}
+    );
+
+    l_shin = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(-0.01f, -0.6f, 0);
+            rotateAbout({0, -0.3f, 0},
+                frame.getDOF(Keyframe::L_KNEE), 0, 0);
+        },
+        drawCube(
+            &renderPassMode,
+            {1.0f, 0.4f, 0.4f},
+            0.1f, 0.3f, 0.1f),
+        {l_foot}
+    );
+
+    l_hip = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(-0.6f, -1.0f, 0.0f);
+            rotateAbout({0.0f, -0.3f, 0.0f},
+                frame.getDOF(Keyframe::L_HIP_PITCH),
+                frame.getDOF(Keyframe::L_HIP_YAW),
+                frame.getDOF(Keyframe::L_HIP_ROLL));
+        },
+        drawCube(
+            &renderPassMode,
+            {1.0f, 0.4f, 0.4f},
+            0.1f, 0.3f, 0.1f),
+        {l_shin}
+    );
+
+    r_foot = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(0.0f, -0.4f, 0.3f);
+        },
+        drawCube(&renderPassMode,
+            {1.0f, 0.0f, 0.5f}, //color
+            0.15f, 0.05f, 0.35f),
+        {}
+    );
+
+    r_shin = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(0.01f, -0.6f, 0);
+            rotateAbout({0, -0.3f, 0},
+                frame.getDOF(Keyframe::R_KNEE), 0, 0);
+        },
+        drawCube(
+            &renderPassMode,
+            {1.0f, 0.4f, 0.4f},
+            0.1f, 0.3f, 0.1f),
+        {r_foot}
+    );
+
+    r_hip = new SceneNode(
+        [](Keyframe & frame) {
+            glTranslatef(0.6f, -1.0f, 0.0f);
+            rotateAbout({0.0, -0.3f, 0.0f},
+                frame.getDOF(Keyframe::R_HIP_PITCH),
+                frame.getDOF(Keyframe::R_HIP_YAW),
+                frame.getDOF(Keyframe::R_HIP_ROLL));
+        },
+        drawCube(
+            &renderPassMode,
+            {1.0f, 0.4f, 0.4f},
+            0.1f, 0.3f, 0.1f),
+        {r_shin}
+    );
+
     head = new SceneNode(
         [](Keyframe & frame) {
             glTranslatef(0.0f, 2.0f, 0.0f),
@@ -124,7 +201,7 @@ void initScene() {
         drawCube(&renderPassMode,
                  {1.0f, 0.5f, 0.1f},
                  0.5f, 1.0f, 0.5f),
-        {l_shoulder, r_shoulder, head}
+        {l_shoulder, r_shoulder, head, l_hip, r_hip}
     );
 
     scene = body;
