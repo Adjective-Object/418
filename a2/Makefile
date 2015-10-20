@@ -15,7 +15,7 @@ CCC	          = /usr/bin/g++
 CFLAGS        = -Wall -c -g
 
 # Define C++ compiler options
-CCCFLAGS      = -Wall -Wno-reorder -c -g --std=c++11
+CCCFLAGS      = -Wall -Wno-reorder -c -g --std=c++0x
 
 # Define C/C++ pre-processor options
 CPPFLAGS      = -I./

@@ -7,6 +7,8 @@
 #include <GL/glut.h>
 #include <vector>
 
+#include "keyframe.h"
+
 enum {WIREFRAME, SOLID, OUTLINED};
 
 typedef struct Color {
@@ -22,60 +24,28 @@ typedef struct Vector3 {
 } Vector3;
 
 class SceneNode {
-    Color color;
-
     protected:
         std::vector<SceneNode *> children;
 
     public:
-
-        float internalTime;
-        float internalTimeMax;
-        
-        SceneNode(float internalTimeMax,
-                  std::function<float (float)> easingfn,
-                  std::function<void (float)> applyParameter,
+        SceneNode(std::function<void (Keyframe & currentFrame)> applyDOF,
                   std::function<void ()> draw,
                   std::vector<SceneNode *> children);
         ~SceneNode();
 
         void update(float tDelta);
-        void render();
+        void render(Keyframe & dof);
 
-        float param;
-        
-        // apply the current value of the matrix as a transformation
-        std::function<void (float param)> applyParameter;
+        // use the current keyframe to generate the transform of this object
+        std::function<void (Keyframe &)> applyDOF;
 
-        // animation function to generate the current value of the matrix 
-        // based on loop time, tdelta, and current value of the parameter
-        std::function<float (float time)> 
-            generateParameter;
-
-        // draw the actual model of the 2d object
+        // render the model of the object
         std::function<void ()> draw; 
 };
 
 
-// easing functions
-float _normSin(float t);
-extern std::function<float (float)> normSin;
-std::function<float (float)> flatValue(float value);
-
-// automation functions & their higher order counterparts
-std::function<void (float)> rotateAbout
-        (Vector3 offset, Vector3 axis, float angle);
-std::function<void (float)> scaledTranslate(float xOff, float yOff);
-extern std::function<void (float)> doNothing;
-
-
-std::function<void (float)> fixedScale(float* x, float* y, float* z);
-std::function<void (float)> fixedTranslate(float * x, float * y, float * z);
-std::function<void (float)> fixedRotate(Vector3 offset, float * x, float * y, float * z);
-
-std::function<void (float)> multiAnim(
-        std::vector<std::function<void (float)>> anims);
- 
+// keyframing helper functions
+void rotateAbout(Vector3 offset, float x, float y, float z); 
 
 // rendering functions & their higher order counterparts
 void _drawCube(Color c, float w, float h, float d);

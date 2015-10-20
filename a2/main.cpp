@@ -750,10 +750,8 @@ void animate()
 		// the callback).
 		glutSetWindow(windowID);
 		glutPostRedisplay();
-
-        scene->update(SEC_PER_FRAME);
-
-		// Restart the frame rate timer
+		
+        // Restart the frame rate timer
 		// for the next frame
 		frameRateTimer->reset();
 	}
@@ -850,14 +848,14 @@ void display(void)
     } else if (renderStyle == OUTLINED || renderStyle == SOLID) {
         renderPassMode = SOLID;
     } 
-    scene->render();
+    scene->render(*joint_ui_data);
 
     // render the scene again (outlines only) if renderStyle = OUTLINED
     if (renderStyle == OUTLINED) {
         renderPassMode = OUTLINED;
         
         glLineWidth(2);
-        scene->render();
+        scene->render(*joint_ui_data);
     }
     
 	// SAMPLE CODE **********
