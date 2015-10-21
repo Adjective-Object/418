@@ -54,36 +54,57 @@ void _cube(float w, float h, float d)
 {
 	glBegin(GL_QUADS);
 		// draw front face
+        glNormal3f(0, 0, 1);
 		glVertex3f(-w, -h, d);
+        glNormal3f(0, 0, 1);
 		glVertex3f( w, -h, d);
+        glNormal3f(0, 0, 1);
 		glVertex3f( w,  h, d);
+        glNormal3f(0, 0, 1);
 		glVertex3f(-w,  h, d);
 
 		// draw back face
+        glNormal3f(0, 0, -1);
 		glVertex3f( w, -h, -d);
+        glNormal3f(0, 0, -1);
 		glVertex3f(-w, -h, -d);
+        glNormal3f(0, 0, -1);
 		glVertex3f(-w,  h, -d);
+        glNormal3f(0, 0, -1);
 		glVertex3f( w,  h, -d);
 
 		// draw left face
+        glNormal3f(-1, 0, 0);
 		glVertex3f(-w, -h, -d);
+        glNormal3f(-1, 0, 0);
 		glVertex3f(-w, -h,  d);
+        glNormal3f(-1, 0, 0);
 		glVertex3f(-w,  h,  d);
+        glNormal3f(-1, 0, 0);
 		glVertex3f(-w,  h, -d);
 
 		// draw right face
+        glNormal3f(1, 0, 0);
 		glVertex3f( w, -h,  d);
+        glNormal3f(1, 0, 0);
 		glVertex3f( w, -h, -d);
+        glNormal3f(1, 0, 0);
 		glVertex3f( w,  h, -d);
+        glNormal3f(1, 0, 0);
 		glVertex3f( w,  h,  d);
 
 		// draw top
+        glNormal3f(0, 1, 0);
 		glVertex3f(-w,  h,  d);
+        glNormal3f(0, 1, 0);
 		glVertex3f( w,  h,  d);
+        glNormal3f(0, 1, 0);
 		glVertex3f( w,  h, -d);
+        glNormal3f(0, 1, 0);
 		glVertex3f(-w,  h, -d);
 
 		// draw bottom
+        glNormal3f(0, -1, 0);
 		glVertex3f(-w, -h, -d);
 		glVertex3f( w, -h, -d);
 		glVertex3f( w, -h,  d);
@@ -100,7 +121,9 @@ std::function<void ()> drawModel(
         int * renderPassMode, Color c, 
         std::function<void ()> draw) {
     return [=] ()  {
-        if (*renderPassMode == SOLID) {
+        if (*renderPassMode == SOLID || 
+            *renderPassMode == MATTE || 
+            *renderPassMode == METALLIC) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glColor3f(c.red, c.green, c.blue);
             draw();

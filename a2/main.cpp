@@ -66,6 +66,7 @@ int windowID;				// Glut window ID (for display)
 int Win[2];					// window (x,y) size
 
 GLUI* glui_joints;			// Glui window with joint controls
+GLUI* glui_light;			// Glui window with joint controls
 GLUI* glui_keyframe;		// Glui window with keyframe controls
 GLUI* glui_render;			// Glui window for render style
 
@@ -81,9 +82,30 @@ int  lastX = 0;
 int  lastY = 0;
 const float ZOOM_SCALE = 0.01;
 
-GLdouble camXPos =  0.0;
-GLdouble camYPos =  0.0;
-GLdouble camZPos = -7.5;
+float camXPos =  3.0f;
+float camYPos =  3.6f;
+float camZPos =  5.0f;
+float camPitch = -30.0f;
+float camYaw =   30.0f;
+float camRoll =  0;
+GLfloat light_position[] = {-8.0, 8.0, 3.0, 1};
+GLfloat light_color[] = {1.0f, 1.0f, 1.0f, 0.5f};
+
+
+// -- MATERIALS --
+//White rubber
+float plastic_mat_ambient[] = {0.19125f, 0.0735f, 0.0225f, 1.0f};
+float plastic_mat_diffuse[] = {0.7038f, 0.27048f, 0.0828f, 1.0f}; 
+float plastic_mat_specular[] = {0.256777f, 0.137622f, 0.086014f, 1.0f};
+float plastic_shine = 10.0f;
+
+//Chrome
+float metal_mat_ambient[] ={0.25f, 0.25f, 0.25f, 1.0f};
+float metal_mat_diffuse[] ={0.4f, 0.4f, 0.4f, 1.0f };
+float metal_mat_specular[] ={0.774597f, 0.774597f, 0.774597f, 1.0f};
+float metal_shine = 76.8f;
+
+GLfloat black[] = {0.0f, 0.0f, 0.0f};
 
 const GLdouble CAMERA_FOVY = 60.0;
 const GLdouble NEAR_CLIP   = 0.1;
@@ -299,7 +321,7 @@ void loadKeyframeButton(int)
 void updateKeyframeButton(int)
 {
 	///////////////////////////////////////////////////////////
-	// TODO:
+	// DONE:
 	//   Modify this function to save the UI joint values into
 	//   the appropriate keyframe entry in the keyframe list
 	//   when the user clicks on the 'Update Keyframe' button.
@@ -307,14 +329,22 @@ void updateKeyframeButton(int)
 	///////////////////////////////////////////////////////////
 
 	// Get the keyframe ID from the UI
-	int keyframeID = 0;
+	int keyframeID = joint_ui_data->getID();
 
 	// Update the 'maxValidKeyframe' index variable
 	// (it will be needed when doing the interpolation)
+    maxValidKeyframe = (maxValidKeyframe < keyframeID) ? keyframeID : maxValidKeyframe;
 
 	// Update the appropriate entry in the 'keyframes' array
 	// with the 'joint_ui_data' data
+    for(int i=0; i<Keyframe::NUM_JOINT_ENUM; i++) {
+        keyframes[keyframeID].setDOF(i, joint_ui_data->getDOF(i));
+    }
+    keyframes[keyframeID].setTime(joint_ui_data->getTime());
+    
+    //TODO sort the keyframes based on time
 
+   
 	// Let the user know the values have been updated
 	sprintf(msg, "Status: Keyframe %d updated successfully", keyframeID);
 	status->set_text(msg);
@@ -348,7 +378,7 @@ void loadKeyframesFromFileButton(int)
 		fscanf(file, "%d", keyframes[i].getIDPtr());
 		fscanf(file, "%f", keyframes[i].getTimePtr());
 
-		for( int j = 0; j < Keyframe::NUM_JOINT_ENUM; j++ )
+		for( int j = 0; j < Keyframe::NUM_JOINT_ENUM ; j++ )
 			fscanf(file, "%f", keyframes[i].getDOFPtr(j));
 	}
 
@@ -604,7 +634,6 @@ void initGlui()
 	glui_spinner->set_float_limits(KNEE_MIN, KNEE_MAX, GLUI_LIMIT_CLAMP);
 	glui_spinner->set_speed(SPINNER_SPEED);
 
-
 	///////////////////////////////////////////////////////////
 	// TODO (for controlling light source position & additional
 	//      rendering styles):
@@ -614,7 +643,92 @@ void initGlui()
 	//   enumeration in the Keyframe class (keyframe.h).
 	///////////////////////////////////////////////////////////
 
-	//
+    glui_light = GLUI_Master.create_glui("Light Control", 0, Win[0]+12, Win[1] - 3);
+	glui_panel = glui_light->add_panel("View");
+   	
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light x", 
+            GLUI_SPINNER_FLOAT, &light_position[0]);
+    glui_spinner->set_float_limits(-20, 20, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light y", 
+            GLUI_SPINNER_FLOAT, &light_position[1]);
+    glui_spinner->set_float_limits(-20, 20, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light z", 
+            GLUI_SPINNER_FLOAT, &light_position[2]);
+    glui_spinner->set_float_limits(-20, 20, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light red", 
+            GLUI_SPINNER_FLOAT, &light_color[0]);
+    glui_spinner->set_float_limits(-1, 1, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light greene", 
+            GLUI_SPINNER_FLOAT, &light_color[1]);
+    glui_spinner->set_float_limits(-1, 1, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light blue", 
+            GLUI_SPINNER_FLOAT, &light_color[2]);
+    glui_spinner->set_float_limits(-1, 1, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "light intensity", 
+            GLUI_SPINNER_FLOAT, &light_color[3]);
+    glui_spinner->set_float_limits(-1, 1, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+	glui_keyframe->add_column_to_panel(glui_panel, false);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "cam x", 
+            GLUI_SPINNER_FLOAT, &camXPos);
+    glui_spinner->set_float_limits(-20, 20, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "cam y", 
+            GLUI_SPINNER_FLOAT, &camYPos);
+    glui_spinner->set_float_limits(-20, 20, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "cam z", 
+            GLUI_SPINNER_FLOAT, &camZPos);
+    glui_spinner->set_float_limits(-20, 20, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "cam pitch", 
+            GLUI_SPINNER_FLOAT, &camPitch);
+    glui_spinner->set_float_limits(-180, 180, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "cam yaw", 
+            GLUI_SPINNER_FLOAT, &camYaw);
+    glui_spinner->set_float_limits(-180, 180, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+    glui_spinner = glui_light->add_spinner_to_panel(
+            glui_panel, "cam roll", 
+            GLUI_SPINNER_FLOAT, &camRoll);
+    glui_spinner->set_float_limits(-180, 180, GLUI_LIMIT_CLAMP);
+    glui_spinner->set_speed(SPINNER_SPEED);
+
+
+
+
 	// ***************************************************
 
 
@@ -640,11 +754,11 @@ void initGlui()
 	// Add buttons to load and save keyframes from a file
 	// Add buttons to start / stop animation and to render frames to file
 	glui_panel = glui_keyframe->add_panel("", GLUI_PANEL_NONE);
-	glui_keyframe->add_button_to_panel(glui_panel, "Load Keyframe", 0, loadKeyframeButton);
-	glui_keyframe->add_button_to_panel(glui_panel, "Load Keyframes From File", 0, loadKeyframesFromFileButton);
-	glui_keyframe->add_button_to_panel(glui_panel, "Start / Stop Animation", 0, animateButton);
-	glui_keyframe->add_column_to_panel(glui_panel, false);
-	glui_keyframe->add_button_to_panel(glui_panel, "Update Keyframe", 0, updateKeyframeButton);
+    glui_keyframe->add_button_to_panel(glui_panel, "Load Keyframe", 0, loadKeyframeButton);
+    glui_keyframe->add_button_to_panel(glui_panel, "Load Keyframes From File", 0, loadKeyframesFromFileButton);
+    glui_keyframe->add_button_to_panel(glui_panel, "Start / Stop Animation", 0, animateButton);
+    glui_keyframe->add_column_to_panel(glui_panel, false);
+    glui_keyframe->add_button_to_panel(glui_panel, "Update Keyframe", 0, updateKeyframeButton);
 	glui_keyframe->add_button_to_panel(glui_panel, "Save Keyframes To File", 0, saveKeyframesToFileButton);
 	glui_keyframe->add_button_to_panel(glui_panel, "Render Frames To File", 0, renderFramesToFileButton);
 
@@ -671,12 +785,15 @@ void initGlui()
 	glui_render->add_radiobutton_to_group(glui_radio_group, "Wireframe");
 	glui_render->add_radiobutton_to_group(glui_radio_group, "Solid");
 	glui_render->add_radiobutton_to_group(glui_radio_group, "Solid w/ outlines");
+	glui_render->add_radiobutton_to_group(glui_radio_group, "Matte");
+	glui_render->add_radiobutton_to_group(glui_radio_group, "Metallic");
 	//
 	// ***************************************************
 
 
 	// Tell GLUI windows which window is main graphics window
 	glui_joints->set_main_gfx_window(windowID);
+	glui_light->set_main_gfx_window(windowID);
 	glui_keyframe->set_main_gfx_window(windowID);
 	glui_render->set_main_gfx_window(windowID);
 }
@@ -689,7 +806,10 @@ void initGl(void)
     // Ignore the meaning of the 'alpha' value for now
     glClearColor(0.7f,0.7f,0.9f,1.0f);
     glEnable(GL_DEPTH);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);    
+    glEnable(GL_NORMALIZE);
 }
 
 
@@ -723,15 +843,19 @@ Vector getInterpolatedJointDOFS(float time)
 	// for computing the interpolation
 	Vector p0 = keyframes[i-1].getDOFVector();
 	Vector p1 = keyframes[i].getDOFVector();
+	
+    // get the next vectors out (w/ looping)
+    Vector pn0 = keyframes[(i-2 + maxValidKeyframe) % maxValidKeyframe].getDOFVector();
+	Vector pn1 = keyframes[(i+1) % maxValidKeyframe].getDOFVector();
 
-	///////////////////////////////////////////////////////////
-	// TODO (animation using Catmull-Rom):
-	//   Currently the code operates using linear interpolation
-    //   Modify this function so it uses Catmull-Rom instead.
-	///////////////////////////////////////////////////////////
+    //approiximate tangent vectors
+    Vector tan0 = (pn0 + p1) / 2,
+           tan1 = (p0 + pn1) / 2;
 
-	// Return the linearly interpolated Vector
-	return p0 * (1-alpha) + p1 * alpha;
+    return p0 * (2 * powf(alpha, 3) - 3 * powf(alpha, 2) + 1) +
+            tan0 * (powf(alpha, 3) - 2 * powf(alpha, 2) + alpha) +
+            p1 * (-2 * powf(alpha, 3) + 3 * powf(alpha, 2)) +
+            tan1 * (powf(alpha, 3) - powf(alpha, 2));
 }
 
 
@@ -770,10 +894,10 @@ void reshape(int w, int h)
     // Setup projection matrix for new window
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-	gluPerspective(CAMERA_FOVY, (GLdouble)Win[0]/(GLdouble)Win[1], NEAR_CLIP, FAR_CLIP);
+    gluPerspective(CAMERA_FOVY, (GLdouble)Win[0]/(GLdouble)Win[1], NEAR_CLIP, FAR_CLIP);
+
+
 }
-
-
 
 // display callback
 //
@@ -793,16 +917,24 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-	// Specify camera transformation
-	glTranslatef(camXPos, camYPos, camZPos);
+    glPushMatrix();
+        // set up lights 
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
+    glPopMatrix();
+ 
+     // Specify camera transformation
+	glRotatef(-camPitch, 1, 0 ,0);
+    glRotatef(-camYaw,   0, 1, 0);
+    glRotatef(-camRoll,  0, 0, 1);
+	glTranslatef(-camXPos, -camYPos, -camZPos);
 
 
 	// Get the time for the current animation step, if necessary
-	if( animate_mode )
-	{
-		float curTime = animationTimer->elapsed();
+	if( animate_mode ) {
+   		float curTime = animationTimer->elapsed();
 
-		if( curTime >= keyframes[maxValidKeyframe].getTime() )
+		if( curTime >= keyframes[maxValidKeyframe].getTime())
 		{
 			// Restart the animation
 			animationTimer->reset();
@@ -824,7 +956,6 @@ void display(void)
 		glui_keyframe->sync_live();
 	}
 
-
     ///////////////////////////////////////////////////////////
     // (DONE) TODO: make the penguin Prettier
 	//   Modify this function to draw the scene.
@@ -843,11 +974,28 @@ void display(void)
 
     // render the scene depending on the render mode
     if (renderStyle == WIREFRAME) {
-        glLineWidth(1);
         renderPassMode = WIREFRAME;
-    } else if (renderStyle == OUTLINED || renderStyle == SOLID) {
+    // render the scene depending on the render mode
+    } else {
         renderPassMode = SOLID;
-    } 
+    }
+    
+    if (renderStyle == MATTE) {
+        glEnable(GL_LIGHTING);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, plastic_mat_specular);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, plastic_mat_diffuse);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, plastic_mat_ambient);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &plastic_shine);
+    } else if (renderStyle == METALLIC) {
+        glEnable(GL_LIGHTING);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, metal_mat_specular);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, metal_mat_diffuse);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, metal_mat_ambient);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &metal_shine);
+    } else{
+        glDisable(GL_LIGHTING);
+    }
+
     scene->render(*joint_ui_data);
 
     // render the scene again (outlines only) if renderStyle = OUTLINED
@@ -858,8 +1006,6 @@ void display(void)
         scene->render(*joint_ui_data);
     }
     
-	// SAMPLE CODE **********
-
     // Execute any GL functions that are in the queue just to be safe
     glFlush();
 

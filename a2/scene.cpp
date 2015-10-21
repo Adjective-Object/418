@@ -42,7 +42,7 @@ Vector3 l_shoulder_offset,
         head_offset;
 
 void invertZ(){
-    glScalef(1, 1, -1);
+    glRotatef(180, 0, 1, 0);
 }
 
 void initScene() { 

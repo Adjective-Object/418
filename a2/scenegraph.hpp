@@ -9,7 +9,7 @@
 
 #include "keyframe.h"
 
-enum {WIREFRAME, SOLID, OUTLINED};
+enum {WIREFRAME, SOLID, OUTLINED, MATTE, METALLIC};
 
 typedef struct Color {
     float red;
